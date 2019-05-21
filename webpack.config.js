@@ -1,13 +1,14 @@
  // 引入path插件
 const path = require('path');
+
 // 布置热节点第二步骤
 const wabpack = require('webpack');
 
 // 内存中生成html页面的插件
-//自动将打包好的bundle.js插入到页面中
+// 会自动将打包好的bundle.js插入到页面中
 const htmlWebpackPlugin = require('html-webpack-plugin');
 
-// Vue-loader在15.*之后的版本都是 vue-loader的使用都是需要伴生 VueLoaderPlugin的,
+// Vue-loader在15.*之后的版本都是 vue-loader的使用都是需要伴生 VueLoaderPlugin的.
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 module.exports = {
     // 入口配置
@@ -34,24 +35,29 @@ module.exports = {
             template: path.join(__dirname,'./src/index.html'),
             filename: "index.html"
         }),
+        //vue-loader插件
         new VueLoaderPlugin()
     ],
-    //配置了所有第三方模块的匹配规则
+    /*
+    *   配置了所有第三方模块的匹配规则
+    *        test:正则表达式
+    *        use: loader配置,从后往前调用
+    *        exclude:不需要加载的部分
+    *  */
     module: {
         rules: [
-            {   //正则表达式
-                test:/\.css$/,
-                // 从后往前调用
-                // 先使用css-loader处理 .css文件类型，再调用style-loader，最后交给webpack
-                use:['style-loader','css-loader']
-            },
+            //样式加载器
+            { test:/\.css$/, use:['style-loader','css-loader']},
             { test:/\.less$/,use:['style-loader','css-loader','less-loader']},
             { test:/\.scss$/,use:['style-loader','css-loader','sass-loader']},
+            //字体加载器
+            { test: /\.(woff|woff2|eot|ttf|otf)$/, use: ['file-loader']},
+            //图片加载器
+            { test: /\.(png|jpe?g|gif|svg)(\?.*)?$/, use: 'url-loader'},
+            //es6转es5加载器
             { test:/\.js$/,use:'babel-loader', exclude: /node_modules/},
+            //.vue文件加载器
             { test:/\.vue$/,use:'vue-loader'},
-            {test: /\.(woff|woff2|eot|ttf|otf)$/, use: ['file-loader']}
-
         ]
     }
-
 };
